@@ -1,0 +1,49 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Vehicle List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+        }
+        ul {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 0;
+            list-style: none;
+        }
+        li {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        a {
+            text-decoration: none;
+            color: #2c7be5;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>All Vehicles</h1>
+    <ul>
+        {% for vehicle in vehicles %}
+            <li>
+                <a href="{% url 'vehicle_detail' vehicle.id %}">
+                    {{ vehicle.vehicle_type }} - {{ vehicle.vehicle_number }}
+                </a>
+            </li>
+        {% empty %}
+            <li>No vehicles found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

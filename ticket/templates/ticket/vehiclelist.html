@@ -1,0 +1,211 @@
+{% load static %}
+{% load grouping %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Seat Layout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --light-gray: #f8f9fa;
+            --dark-gray: #343a40;
+            --success-color: #4bb543;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7ff;
+            color: var(--dark-gray);
+            line-height: 1.6;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px 0;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 20px rgba(67, 97, 238, 0.2);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+  
+        h2 {
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: #e85a71;
+    margin-bottom: 20px;
+}
+
+
+        
+        .vehicle-info {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .vehicle-info p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+        
+        .seat-container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .seat-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .seat {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #e0e0e0;
+            text-align: center;
+            line-height: 60px;
+            margin: 0 10px;
+            border-radius: 8px;
+            background-color: var(--light-gray);
+            font-weight: 600;
+            color: var(--dark-gray);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .seat:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            border-color: var(--accent-color);
+        }
+        
+        .seat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(76, 201, 240, 0.1), rgba(67, 97, 238, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .seat:hover::before {
+            opacity: 1;
+        }
+        
+        .driver-area {
+            width: 120px;
+            height: 80px;
+            background-color: var(--dark-gray);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            font-weight: 500;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.4rem;
+            }
+            
+            .seat {
+                width: 45px;
+                height: 45px;
+                line-height: 45px;
+                margin: 0 5px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>Vehicle Seat Layout</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="vehicle-info">
+            <h2>{{ vehicle.vehicle_type }} - {{ vehicle.vehicle_number }}</h2>
+            <p>Total Seats: {{ vehicle.total_seats }}</p>
+        </div>
+
+        <div class="seat-container">
+            <div class="driver-area">Driver</div>
+            
+            {% for row in seats|dictsort:"seat_label"|grouped:4 %}
+                <div class="seat-row">
+                    {% for seat in row %}
+                        <div class="seat">{{ seat.seat_label }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; {% now "Y" %} Vehicle Management System. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

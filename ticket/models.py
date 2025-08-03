@@ -10,6 +10,14 @@ class Passenger(models.Model):
 def __str__(self):
     return self.name
 
+# class Vehicle(models.Model):
+#     vehicle_type = models.CharField(max_length=100)
+#     vehicle_number = models.CharField(max_length=15)
+#     total_seats = models.IntegerField()
+
+#     def __str__(self):
+#         return f"{self.vehicle_type} - {self.vehicle_number}"
+    
 class Vehicle(models.Model):
     vehicle_type = models.CharField(max_length=100)
     vehicle_number = models.CharField(max_length=15)
@@ -17,7 +25,25 @@ class Vehicle(models.Model):
 
     def __str__(self):
         return f"{self.vehicle_type} - {self.vehicle_number}"
-    
+
+    def generate_seats(self):
+        seat_labels = []
+        seats_per_row = 4
+        seat_letters = ['A', 'B', 'C', 'D']
+
+        for i in range(self.total_seats):
+            row = i // seats_per_row + 1
+            col = i % seats_per_row
+            seat_labels.append(f"{row}{seat_letters[col]}")
+
+        return seat_labels
+
+class Seat(models.Model):
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='seats')
+    seat_label = models.CharField(max_length=5)
+
+    def __str__(self):
+        return f"{self.seat_label} - {self.vehicle.vehicle_number}"
 
 class Booking(models.Model):
     passenger = models.ForeignKey(Passenger, on_delete=models.CASCADE)

@@ -1,0 +1,128 @@
+<!-- templates/seats.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seat Layout</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .row {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+            align-items: center;
+        }
+        .seat {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 8px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            background-color: #ecf0f1;
+            font-weight: bold;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+        }
+        .seat:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        .booked {
+            background-color: #e74c3c;
+            color: white;
+            border-color: #c0392b;
+        }
+        .driver {
+            margin-left: 40px;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 18px;
+            background-color: #f1c40f;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 0 15px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+        .available-color {
+            background-color: #ecf0f1;
+            border: 1px solid #3498db;
+        }
+        .booked-color {
+            background-color: #e74c3c;
+            border: 1px solid #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Vehicle Seat Layout</h2>
+
+        <div class="row">
+            {% for seat in seat_layout.row1 %}
+                <div class="seat {% if seat in booked %}booked{% endif %}">{{ seat }}</div>
+            {% endfor %}
+            <div class="driver">{{ seat_layout.driver }}</div>
+        </div>
+
+        <div class="row">
+            {% for seat in seat_layout.row2 %}
+                <div class="seat {% if seat in booked %}booked{% endif %}">{{ seat }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="row">
+            {% for seat in seat_layout.row3 %}
+                <div class="seat {% if seat in booked %}booked{% endif %}">{{ seat }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color available-color"></div>
+                <span>Available</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color booked-color"></div>
+                <span>Booked</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
