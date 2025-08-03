@@ -11,19 +11,15 @@ class Passenger(models.Model):
 def __str__(self):
     return self.name
 
-# class Vehicle(models.Model):
-#     vehicle_type = models.CharField(max_length=100)
-#     vehicle_number = models.CharField(max_length=15)
-#     total_seats = models.IntegerField()
 
-#     def __str__(self):
-#         return f"{self.vehicle_type} - {self.vehicle_number}"
-    
 class Vehicle(models.Model):
     vehicle_type = models.CharField(max_length=100)
     vehicle_number = models.CharField(max_length=15)
     departure_date = models.DateField(default=timezone.now)
+    From = models.CharField(max_length=100,  default='Unknown')
+    To = models.CharField(max_length=100, default='Unknown')
     total_seats = models.IntegerField()
+    
 
     def __str__(self):
         return f"{self.vehicle_type} - {self.vehicle_number}"
