@@ -1,49 +1,338 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vehicle List</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 30px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        h1 {
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 30px;
             text-align: center;
         }
-        ul {
-            max-width: 400px;
-            margin: 20px auto;
-            padding: 0;
-            list-style: none;
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
         }
-        li {
-            margin: 10px 0;
-            font-size: 18px;
+
+        .header p {
+            color: #666;
+            font-size: 1rem;
         }
-        a {
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+            border-bottom: 2px solid #f1f3f4;
+            padding-bottom: 10px;
+        }
+
+        .filter-section {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        select, input[type="date"] {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            background: white;
+            transition: border-color 0.2s ease;
+        }
+
+        select:focus, input[type="date"]:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .filter-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            background: #0056b3;
+        }
+
+        .table-container {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8f9fa;
+            color: #555;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #f1f3f4;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .vehicle-link {
+            color: #007bff;
             text-decoration: none;
-            color: #2c7be5;
+            font-weight: 500;
         }
-        a:hover {
+
+        .vehicle-link:hover {
             text-decoration: underline;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .vehicle-type-badge {
+            background: #e9ecef;
+            color: #555;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .seats-count {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                border-radius: 6px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 600px;
+            }
+
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .filter-section {
+                padding: 15px;
+            }
+
+            .content {
+                padding: 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>All Vehicles</h1>
-    <ul>
-        {% for vehicle in vehicles %}
-            <li>
-                <a href="{% url 'vehicle_detail' vehicle.id %}">
-                    {{ vehicle.vehicle_type }} - {{ vehicle.vehicle_number }}
-                </a>
-            </li>
-        {% empty %}
-            <li>No vehicles found.</li>
-        {% endfor %}
-    </ul>
+    <div class="container">
+        <div class="header">
+            <h1>Vehicle Booking System</h1>
+            <p>Find your perfect ride</p>
+        </div>
+        
+        <div class="content">
+            <div class="filter-section">
+                <h2>Filter Vehicles</h2>
+                <form method="get" class="filter-form">
+                    <div class="form-group">
+                        <label for="from_location">From Location</label>
+                        <select name="from_location" id="from_location">
+                            <option value="">-- Select From --</option>
+                            {% for option in from_options %}
+                                <option value="{{ option }}" {% if from_value == option %}selected{% endif %}>{{ option }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="to_location">To Location</label>
+                        <select name="to_location" id="to_location">
+                            <option value="">-- Select To --</option>
+                            {% for option in to_options %}
+                                <option value="{{ option }}" {% if to_value == option %}selected{% endif %}>{{ option }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="departure_date">Departure Date</label>
+                        <input type="date" name="departure_date" id="departure_date" value="{{ date_value }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="filter-btn">Search Vehicles</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="section">
+                <h2>Available Vehicles</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vehicle Number</th>
+                                <th>Vehicle Type</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Departure Date</th>
+                                <th>Total Seats</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vehicle in vehicles %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'vehicle_detail' vehicle.id %}" class="vehicle-link">
+                                            {{ vehicle.vehicle_number }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="vehicle-type-badge">{{ vehicle.vehicle_type }}</span>
+                                    </td>
+                                    <td>{{ vehicle.from_location }}</td>
+                                    <td>{{ vehicle.to_location }}</td>
+                                    <td>{{ vehicle.departure_date }}</td>
+                                    <td>
+                                        <span class="seats-count">{{ vehicle.total_seats }} seats</span>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="no-results">
+                                        No vehicles found for the selected criteria.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

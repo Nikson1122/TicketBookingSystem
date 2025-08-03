@@ -16,8 +16,8 @@ class Vehicle(models.Model):
     vehicle_type = models.CharField(max_length=100)
     vehicle_number = models.CharField(max_length=15)
     departure_date = models.DateField(default=timezone.now)
-    From = models.CharField(max_length=100,  default='Unknown')
-    To = models.CharField(max_length=100, default='Unknown')
+    from_location = models.CharField(max_length=100,  default='Unknown')
+    to_location= models.CharField(max_length=100, default='Unknown')
     total_seats = models.IntegerField()
     
 
@@ -39,6 +39,7 @@ class Vehicle(models.Model):
 class Seat(models.Model):
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='seats')
     seat_label = models.CharField(max_length=5)
+    booked = models.BooleanField(default=False) 
 
     def __str__(self):
         return f"{self.seat_label} - {self.vehicle.vehicle_number}"

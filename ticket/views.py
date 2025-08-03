@@ -55,9 +55,35 @@ def seat_view(request):
     return render(request, 'ticket/seat.html', {'seat_layout': seat_layout, 'booked': booked})
 
 
+
+
 def vehicle_list(request):
     vehicles = Vehicle.objects.all()
-    return render(request, 'ticket/vehicle_list.html', {'vehicles': vehicles})
+
+    from_value = request.GET.get('from_location')
+    to_value = request.GET.get('to_location')
+    date_value = request.GET.get('departure_date')
+
+    if from_value:
+        vehicles = vehicles.filter(from_location__icontains=from_value)
+    if to_value:
+        vehicles = vehicles.filter(to_location__icontains=to_value)
+    if date_value:
+        vehicles = vehicles.filter(departure_date=date_value)
+
+    from_options = Vehicle.objects.values_list('from_location', flat=True).distinct()
+    to_options = Vehicle.objects.values_list('to_location', flat=True).distinct()
+
+    context = {
+        'vehicles': vehicles,
+        'from_value': from_value,
+        'to_value': to_value,
+        'date_value': date_value,
+        'from_options': from_options,
+        'to_options': to_options,
+    }
+
+    return render(request, 'ticket/vehicle_list.html', context)
 
 
 def vehicle_detail(request, vehicle_id):
