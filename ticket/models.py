@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 
@@ -21,6 +22,7 @@ def __str__(self):
 class Vehicle(models.Model):
     vehicle_type = models.CharField(max_length=100)
     vehicle_number = models.CharField(max_length=15)
+    departure_date = models.DateField(default=timezone.now)
     total_seats = models.IntegerField()
 
     def __str__(self):
