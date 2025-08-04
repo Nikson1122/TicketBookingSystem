@@ -301,6 +301,7 @@
                                 <th>To</th>
                                 <th>Departure Date</th>
                                 <th>Total Seats</th>
+                                <th>Price</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -317,6 +318,8 @@
                                     <td>{{ vehicle.from_location }}</td>
                                     <td>{{ vehicle.to_location }}</td>
                                     <td>{{ vehicle.departure_date }}</td>
+                                    <td>{{ vehicle.price }}</td>
+                                    
                                     <td>
                                         <span class="seats-count">{{ vehicle.total_seats }} seats</span>
                                     </td>

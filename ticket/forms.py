@@ -10,4 +10,4 @@ class VehicleForm(forms.ModelForm):
 
     class Meta:  
         model = Vehicle
-        fields = ['vehicle_type', 'vehicle_number', 'total_seats', 'departure_date', 'from_location', 'to_location']
+        fields = ['vehicle_type', 'vehicle_number', 'total_seats', 'departure_date', 'from_location', 'to_location', 'price']

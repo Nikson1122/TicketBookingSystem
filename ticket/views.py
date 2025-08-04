@@ -108,6 +108,7 @@ def handle_booking(request):
     email = request.GET.get('email', '')  # User's email, just for reference
     phonenumber = request.GET.get('phonenumber', '')  
     name = request.GET.get('name', '')
+    price = request.GET.get('price', '')
 
     context = {
         'seat_label': seat_label,
@@ -119,6 +120,7 @@ def handle_booking(request):
         'email': email,
         'phonenumber': phonenumber,
         'name': name,
+        'price': price,
     }
 
     return render(request, 'ticket/booking_confirmation.html', context)

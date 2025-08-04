@@ -535,7 +535,11 @@
                     <div class="info-item-content">
                         <div class="info-item-label">From Location</div>
                         <div class="info-item-value">{{ vehicle.from_location }}</div>
+                        
+
                     </div>
+                    
+                    
                 </div>
                 
                 <div class="info-item">
@@ -543,10 +547,16 @@
                     <div class="info-item-content">
                         <div class="info-item-label">To Location</div>
                         <div class="info-item-value">{{ vehicle.to_location }}</div>
+
+                        
+                          
+
                     </div>
+                    
                 </div>
             </div>
         </div>
+        <div class="info-item-value">Price💵 {{ vehicle.price }}</div>
 
         <div class="seat-container">
             <h3>Choose Your Seat</h3>
@@ -605,6 +615,7 @@
             fromLocation: "{{ vehicle.from_location }}",
             toLocation: "{{ vehicle.to_location }}",
             departureDate: "{{ vehicle.departure_date }}",
+            price: "{{ vehicle.price }}"
         };
 
         seats.forEach(seat => {
@@ -640,6 +651,9 @@
                 from: vehicleData.fromLocation,
                 to: vehicleData.toLocation,
                 departureDate: vehicleData.departureDate,
+                price: vehicleData.price
+               
+
             });
 
             // Redirect immediately to Java login page with params
