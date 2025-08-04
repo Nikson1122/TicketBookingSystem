@@ -9,6 +9,7 @@ urlpatterns = [
     path('vehicle/success/', views.vehicle_success, name='vehicle-success'),
     path('vehicles/', views.vehicle_list, name='vehicle_list'), 
     path('vehicle/<int:vehicle_id>/', views.vehicle_detail, name='vehicle_detail'),
+     path('confirm-booking/', views.handle_booking, name='handle_booking'),
     
   
 

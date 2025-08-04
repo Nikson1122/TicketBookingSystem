@@ -95,4 +95,34 @@ def vehicle_detail(request, vehicle_id):
         'seats': seats,
     })
 
+from django.shortcuts import render
+
+def handle_booking(request):
+    # Get the GET parameters
+    seat_label = request.GET.get('seatLabel', '')
+    ticket_id = request.GET.get('ticketId', '')
+    vehicle_id = request.GET.get('vehicleId', '')
+    from_location = request.GET.get('from', '')
+    to_location = request.GET.get('to', '')
+    departure_date = request.GET.get('departureDate', '')
+    email = request.GET.get('email', '')  # User's email, just for reference
+    phonenumber = request.GET.get('phonenumber', '')  
+    name = request.GET.get('name', '')
+
+    context = {
+        'seat_label': seat_label,
+        'ticket_id': ticket_id,
+        'vehicle_id': vehicle_id,
+        'from_location': from_location,
+        'to_location': to_location,
+        'departure_date': departure_date,
+        'email': email,
+        'phonenumber': phonenumber,
+        'name': name,
+    }
+
+    return render(request, 'ticket/booking_confirmation.html', context)
+
+
+
 

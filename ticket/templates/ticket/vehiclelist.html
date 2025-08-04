@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
+        :root { 
             --primary-color: #6366f1;
             --secondary-color: #4f46e5;
             --accent-color: #06b6d4;
@@ -589,39 +589,80 @@
             <p>&copy; {% now "Y" %} Vehicle Management System. All rights reserved.</p>
         </div>
     </footer>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const seats = document.querySelectorAll('.seat');
+        const modal = document.getElementById('seatModal');
+        const selectedSeatLabel = document.getElementById('selectedSeatLabel');
+        const bookBtn = document.getElementById('bookBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const seats = document.querySelectorAll('.seat');
-            const modal = document.getElementById('seatModal');
-            const selectedSeatLabel = document.getElementById('selectedSeatLabel');
-            const bookBtn = document.getElementById('bookBtn');
-            const cancelBtn = document.getElementById('cancelBtn');
+        let currentSeat = null;
 
-            seats.forEach(seat => {
-                seat.addEventListener('click', () => {
-                    const seatLabel = seat.querySelector('span').textContent;
-                    selectedSeatLabel.textContent = seatLabel;
-                    modal.style.display = 'flex';
-                });
-            });
+        // Vehicle data from Django template context
+        const vehicleData = {
+            id: "{{ vehicle.id }}",
+            fromLocation: "{{ vehicle.from_location }}",
+            toLocation: "{{ vehicle.to_location }}",
+            departureDate: "{{ vehicle.departure_date }}",
+        };
 
-            bookBtn.addEventListener('click', () => {
-                alert('Seat booked: ' + selectedSeatLabel.textContent);
-                modal.style.display = 'none';
-            });
-
-            cancelBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
-            });
-
-            // Close modal when clicking outside
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                }
+        seats.forEach(seat => {
+            seat.addEventListener('click', () => {
+                currentSeat = seat;
+                const seatLabel = seat.querySelector('span').textContent;
+                selectedSeatLabel.textContent = seatLabel;
+                modal.style.display = 'flex';
             });
         });
-    </script>
+
+        bookBtn.addEventListener('click', () => {
+            if (!currentSeat) return;
+
+            const seatLabel = selectedSeatLabel.textContent;
+
+            // Generate ticket ID: TCKT-<timestamp>-<random 3-digit number>
+            const ticketId = `TCKT-${Date.now()}-${Math.floor(Math.random() * 900 + 100)}`;
+
+            alert(`Seat booked: ${seatLabel}\nYour Ticket ID: ${ticketId}`);
+
+            // Close modal
+            modal.style.display = 'none';
+
+            // Reset currentSeat after booking
+            currentSeat = null;
+
+            // Build URL params string
+            const params = new URLSearchParams({
+                seatLabel: seatLabel,
+                ticketId: ticketId,
+                vehicleId: vehicleData.id,
+                from: vehicleData.fromLocation,
+                to: vehicleData.toLocation,
+                departureDate: vehicleData.departureDate,
+            });
+
+            // Redirect immediately to Java login page with params
+            window.location.href = `http://localhost:8080/inventory/test?${params.toString()}`;
+
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+            currentSeat = null;
+        });
+
+        // Close modal when clicking outside content
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                currentSeat = null;
+            }
+        });
+    });
+</script>
+
+
+
 </body>
 </html>
