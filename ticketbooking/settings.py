@@ -110,11 +110,15 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
 
-USE_I18N = True
+# USE_I18N = True
 
-USE_TZ = True
+# USE_TZ = True
+
+TIME_ZONE = 'Asia/Kathmandu'
+USE_TZ = True  # Keep this True to store in UTC and convert to TIME_ZONE when displaying
+
 
 
 # Static files (CSS, JavaScript, Images)
@@ -130,3 +134,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # STATICFILES_DIRS = [
 #     BASE_DIR / "static",
 # ]
+
+
+
+# eSewa Config (Test or Production)
+ESEWA_MERCHANT_CODE = 'EPAYTEST'
+ESEWA_PRODUCT_CODE = 'EPAYTEST'
+ESEWA_SECRET_KEY = '8gBm/:&EnhH.1/q'  # Your plain text secret key (not base64 encoded)
+ESEWA_SUCCESS_URL = "https://developer.esewa.com.np/success"
+ESEWA_FAILURE_URL = "https://developer.esewa.com.np/failure"
+ESEWA_ENDPOINT = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form'  # sandbox
+ESEWA_VERIFY_API = 'https://rc-epay.esewa.com.np/api/epay/transaction/status/'  # sandbox
+

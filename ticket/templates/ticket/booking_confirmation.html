@@ -26,11 +26,11 @@
             text-align: center;
             margin-bottom: 30px;
         }
-       h1 {
-    color: #A0522D; /* Sienna - warm and refined */
-    margin-bottom: 10px;
-    font-size: 2.2rem;
-}
+        h1 {
+            color: #A0522D;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
         .subtitle {
             color: #666;
             font-size: 1.1rem;
@@ -64,6 +64,20 @@
             flex: 1;
             font-size: 1rem;
         }
+        .ticket-id {
+            background: #f0f7ff;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            color: #2a7ae2;
+            font-weight: bold;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ddd, transparent);
+            margin: 25px 0;
+        }
         .payment-section {
             text-align: center;
             margin-top: 20px;
@@ -85,20 +99,65 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
         }
-        .ticket-id {
-            background: #f0f7ff;
-            padding: 12px 15px;
-            border-radius: 6px;
-            font-family: monospace;
-            font-size: 1.1rem;
-            color: #2a7ae2;
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            margin: 10% auto;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
             font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            top: 20px;
+            right: 30px;
         }
-        .divider {
-            height: 1px;
-            background: linear-gradient(to right, transparent, #ddd, transparent);
-            margin: 25px 0;
+        .close:hover {
+            color: #000;
         }
+        .pay-option {
+            margin: 10px 0;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s ease;
+        }
+        .pay-option.esewa {
+            background-color: #5cb85c;
+            color: white;
+        }
+        .pay-option.esewa:hover {
+            background-color: #4cae4c;
+        }
+        .pay-option.khalti {
+            background-color: #7d3cff;
+            color: white;
+        }
+        .pay-option.khalti:hover {
+            background-color: #6927e6;
+        }
+
         @media (max-width: 600px) {
             .detail-row {
                 flex-direction: column;
@@ -125,59 +184,92 @@
                 <span class="label">Passenger Name:</span>
                 <span class="value">{{ name }}</span>
             </div>
-
             <div class="detail-row">
                 <span class="label">Contact Number:</span>
                 <span class="value">{{ phonenumber }}</span>
             </div>
-
             <div class="detail-row">
                 <span class="label">Email Address:</span>
                 <span class="value">{{ email }}</span>
             </div>
-
             <div class="divider"></div>
-            
             <div class="detail-row">
                 <span class="label">Seat Number:</span>
                 <span class="value">{{ seat_label }}</span>
             </div>
-            
             <div class="detail-row">
                 <span class="label">Ticket ID:</span>
                 <span class="value ticket-id">{{ ticket_id }}</span>
             </div>
-            
             <div class="detail-row" style="display: none;">
                 <span class="label">Vehicle ID:</span>
                 <span class="value">{{ vehicle_id }}</span>
             </div>
-
             <div class="divider"></div>
-            
             <div class="detail-row">
                 <span class="label">Journey:</span>
                 <span class="value">{{ from_location }} → {{ to_location }}</span>
             </div>
-            
             <div class="detail-row">
                 <span class="label">Departure Date:</span>
                 <span class="value">{{ departure_date }}</span>
             </div>
-
-             <div class="detail-row">
-                <span class="label">Departure Date:</span>
+            <div class="detail-row">
+                <span class="label">Price:</span>
                 <span class="value">{{ price }}</span>
             </div>
-
-
         </div>
-
-        
 
         <div class="payment-section">
             <button class="pay-button">Proceed to Payment</button>
         </div>
     </div>
+
+    <!-- Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Select Payment Method</h2>
+            {% comment %} <button class="pay-option esewa">Pay with eSewa</button> {% endcomment %}
+
+        <form method="POST" action="{% url 'esewa_initiate' %}">
+    {% csrf_token %}
+    <input type="hidden" name="price" value="{{ price }}">
+    <input type="hidden" name="seat_label" value="{{ seat_label }}">
+    <input type="hidden" name="ticket_id" value="{{ ticket_id }}">
+    <input type="hidden" name="vehicle_id" value="{{ vehicle_id }}">
+    <input type="hidden" name="from_location" value="{{ from_location }}">
+    <input type="hidden" name="to_location" value="{{ to_location }}">
+    <input type="hidden" name="departure_date" value="{{ departure_date }}">
+    <input type="hidden" name="email" value="{{ email }}">
+    <input type="hidden" name="phonenumber" value="{{ phonenumber }}">
+    <input type="hidden" name="name" value="{{ name }}">
+    <button type="submit" class="pay-option esewa">Pay with eSewa</button>
+</form>
+
+
+            <button class="pay-option khalti">Pay with Khalti</button>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById("paymentModal");
+        const btn = document.querySelector(".pay-button");
+        const closeBtn = document.querySelector(".close");
+
+        btn.onclick = function () {
+            modal.style.display = "block";
+        }
+
+        closeBtn.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>

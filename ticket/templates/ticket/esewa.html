@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redirecting to eSewa Payment...</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 100px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .message {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        .loader {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #4caf50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader"></div>
+    <div class="message">Please wait, redirecting to eSewa payment...</div>
+
+<form id="esewaPaymentForm" action="{{ ESEWA_ENDPOINT|default:'https://rc-epay.esewa.com.np/api/epay/main/v2/form' }}" method="POST">
+    <input type="hidden" name="amount" value="{{ amount }}">
+    <input type="hidden" name="tax_amount" value="{{ tax_amount }}">
+    <input type="hidden" name="total_amount" value="{{ total_amount }}">
+    <input type="hidden" name="transaction_uuid" value="{{ transaction_uuid }}">
+    <input type="hidden" name="product_code" value="{{ product_code }}">
+    <input type="hidden" name="product_service_charge" value="{{ product_service_charge }}">
+    <input type="hidden" name="product_delivery_charge" value="{{ product_delivery_charge }}">
+    <input type="hidden" name="success_url" value="{{ success_url }}">
+    <input type="hidden" name="failure_url" value="{{ failure_url }}">
+    <input type="hidden" name="signed_field_names" value="{{ signed_field_names }}">
+    <input type="hidden" name="signature" value="{{ signature }}">
+</form>
+
+
+    <script>
+        // Auto-submit form after page loads
+        window.onload = function() {
+            document.getElementById('esewaPaymentForm').submit();
+        }
+    </script>
+</body>
+</html>

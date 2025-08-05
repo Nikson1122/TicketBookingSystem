@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib import admin
-from .models import Passenger, Vehicle, Booking, Payment
+from .models import Passenger, Vehicle, Booking, Payment, Bookings
 
 @admin.register(Passenger)
 class PassengerAdmin(admin.ModelAdmin):
@@ -21,3 +21,9 @@ class PaymentAdmin(admin.ModelAdmin):
     list_display = ('booking', 'amount', 'payment_gateway', 'transaction_id', 'is_successful', 'paid_at')
     list_filter = ('payment_gateway', 'is_successful')
     search_fields = ('transaction_id',)
+
+@admin.register(Bookings)
+class BookingsAdmin(admin.ModelAdmin):
+    list_display = ('name','email','phonenumber','ticket_id', 'vehicle_id', 'from_location', 'to_location', 'departure_date', 'price', 'payment_method', 'payment_status', 'created_at',)
+    list_filter = ('departure_date', 'payment_method', 'payment_status')
+    search_fields = ('name', 'ticket_id', 'vehicle_id', 'email', 'phonenumber')

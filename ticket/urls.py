@@ -10,6 +10,8 @@ urlpatterns = [
     path('vehicles/', views.vehicle_list, name='vehicle_list'), 
     path('vehicle/<int:vehicle_id>/', views.vehicle_detail, name='vehicle_detail'),
      path('confirm-booking/', views.handle_booking, name='handle_booking'),
+        path('esewa/initiate/', views.initiate_esewa_payment, name='esewa_initiate'),
+    path('esewa/success/', views.esewa_success, name='esewa_success'),
     
   
 

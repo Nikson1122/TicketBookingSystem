@@ -1,7 +1,19 @@
 from django.shortcuts import render, redirect
-from .models import Vehicle, Booking, Passenger, Payment, Seat
+import requests 
+from .models import Vehicle, Booking, Passenger, Payment, Seat, Bookings
 from .forms import VehicleForm
 from django.http import HttpResponse
+from datetime import datetime
+from decimal import Decimal
+
+
+
+
+
+from .utils.esewa import generate_esewa_signature
+from django.conf import settings
+import uuid
+from .models import Booking
 
 # Create your views here.
 
@@ -95,7 +107,6 @@ def vehicle_detail(request, vehicle_id):
         'seats': seats,
     })
 
-from django.shortcuts import render
 
 def handle_booking(request):
     # Get the GET parameters
@@ -126,5 +137,140 @@ def handle_booking(request):
     return render(request, 'ticket/booking_confirmation.html', context)
 
 
+def initiate_esewa_payment(request):
+    # Get booking details from POST
+    price = request.POST.get('price')
+    ticket_id = request.POST.get('ticket_id')
+    seat_label = request.POST.get('seat_label')
+    vehicle_id = request.POST.get('vehicle_id')
+    from_location = request.POST.get('from_location')
+    to_location = request.POST.get('to_location')
+    departure_date = request.POST.get('departure_date')
+    email = request.POST.get('email')
+    phonenumber = request.POST.get('phonenumber')
+    name = request.POST.get('name')
+
+    transaction_uuid = str(uuid.uuid4())
+    signature = generate_esewa_signature(price, transaction_uuid)
+
+    success_url = request.build_absolute_uri('/esewa/success/')
+    failure_url = request.build_absolute_uri('/esewa/failure/')
+
+    # ✅ Store all booking data in session
+    request.session['booking_data'] = {
+        'price': price,
+        'ticket_id': ticket_id,
+        'seat_label': seat_label,
+        'vehicle_id': vehicle_id,
+        'from_location': from_location,
+        'to_location': to_location,
+        'departure_date': departure_date,  # Must be a string like "2025-08-05"
+        'email': email,
+        'phonenumber': phonenumber,
+        'name': name,
+        'transaction_uuid': transaction_uuid
+    }
+
+    context = {
+        'amount': price,
+        'tax_amount': '0',
+        'total_amount': price,
+        'transaction_uuid': transaction_uuid,
+        'product_code': settings.ESEWA_MERCHANT_CODE,
+        'product_service_charge': '0',
+        'product_delivery_charge': '0',
+        'success_url': success_url,
+        'failure_url': failure_url,
+        'signed_field_names': 'total_amount,transaction_uuid,product_code',
+        'signature': signature,
+    }
+    return render(request, 'ticket/esewa.html', context)
 
 
+import base64
+import json
+from decimal import Decimal
+from datetime import datetime
+from django.shortcuts import render
+from .models import Bookings
+
+
+import base64
+import json
+from decimal import Decimal
+from datetime import datetime
+from django.shortcuts import render
+from .models import Bookings
+
+def esewa_success(request):
+    print("✅ [DEBUG] eSewa success view called")
+
+    # 1. Decode the 'data' from eSewa
+    data_encoded = request.GET.get('data')
+    try:
+        data_json = base64.b64decode(data_encoded).decode('utf-8')
+        data = json.loads(data_json)
+        print("[DEBUG] Decoded eSewa data:", data)
+    except Exception as e:
+        print("[ERROR] Could not decode eSewa data:", e)
+        return render(request, 'ticket/esewasucess.html', {'error': 'Payment verification failed.'})
+
+    # 2. Get booking data from session
+    booking_data = request.session.get('booking_data', {})
+    print("[DEBUG] Booking data from session:", booking_data)
+
+    transaction_id = data.get('transaction_code')
+    ticket_id = booking_data.get('ticket_id')
+    seat_label = booking_data.get('seat_label')
+    vehicle_id = booking_data.get('vehicle_id')
+    from_location = booking_data.get('from_location')
+    to_location = booking_data.get('to_location')
+    departure_date_str = booking_data.get('departure_date')
+    
+    try:
+        departure_date = datetime.strptime(departure_date_str, '%b. %d, %Y').date()
+    except (ValueError, TypeError) as e:
+        print(f"[ERROR] Invalid departure date (format %b. %d, %Y): {e}")
+        try:
+            # Try an alternative format if the first one fails
+            departure_date = datetime.strptime(departure_date_str, '%Y-%m-%d').date()
+        except Exception as e:
+            print("[ERROR] Invalid departure date (format %Y-%m-%d):", e)
+            departure_date = None
+
+    email = booking_data.get('email')
+    phonenumber = booking_data.get('phonenumber')
+    name = booking_data.get('name')
+    price_str = booking_data.get('price')
+
+    try:
+        price = Decimal(price_str)
+    except Exception as e:
+        print("[ERROR] Invalid price:", e)
+        price = Decimal('0.00')
+
+    # Save booking if all required data is valid
+    if transaction_id and departure_date:
+        try:
+            booking = Bookings.objects.create(
+                seat_label=seat_label,
+                ticket_id=ticket_id,
+                vehicle_id=vehicle_id,
+                from_location=from_location,
+                to_location=to_location,
+                departure_date=departure_date,
+                email=email,
+                phonenumber=phonenumber,
+                name=name,
+                price=price,
+                payment_method='esewa',
+                payment_status=True,
+                transaction_id=transaction_id
+            )
+            print("[SUCCESS] Booking saved:", booking)
+        except Exception as e:
+            print("[ERROR] Failed to save booking:", e)
+    else:
+        print("[ERROR] Required fields missing. Booking not saved.")
+
+    return render(request, 'ticket/esewasucess.html', {'ticket_id': ticket_id})

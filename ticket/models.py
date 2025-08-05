@@ -56,6 +56,28 @@ class Booking(models.Model):
          return f"{self.passenger.name} - Seat {self.seat_number} on {self.journey_date}"
     
 
+from django.db import models
+
+class Bookings(models.Model):
+    PAYMENT_CHOICES = [('esewa', 'eSewa'), ('khalti', 'Khalti')]
+
+    seat_label = models.CharField(max_length=20)
+    ticket_id = models.CharField(max_length=50)
+    vehicle_id = models.CharField(max_length=50)
+    from_location = models.CharField(max_length=100)
+    to_location = models.CharField(max_length=100)
+    departure_date = models.DateField()
+    email = models.EmailField()
+    phonenumber = models.CharField(max_length=15)
+    name = models.CharField(max_length=100)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(max_length=10, choices=PAYMENT_CHOICES)
+    payment_status = models.BooleanField(default=False)
+    transaction_id = models.CharField(max_length=100, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.ticket_id}"
 
 class Payment(models.Model):
     booking = models.OneToOneField(Booking, on_delete=models.CASCADE)
