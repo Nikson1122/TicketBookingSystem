@@ -12,6 +12,8 @@ urlpatterns = [
      path('confirm-booking/', views.handle_booking, name='handle_booking'),
         path('esewa/initiate/', views.initiate_esewa_payment, name='esewa_initiate'),
     path('esewa/success/', views.esewa_success, name='esewa_success'),
+    path('vehicles/<int:vehicle_id>/seats/', views.seat_selection_view, name='seat_selection'),
+    # path('book/', views.book_seat, name='book_seat'),
     
   
 

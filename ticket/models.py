@@ -3,13 +3,7 @@ from django.utils import timezone
 
 # Create your models here.
 
-class Passenger(models.Model):
-    name =models.CharField(max_length=100)
-    contact_number =models.CharField(max_length = 15)
-    email = models.EmailField(blank=True, null=True)
 
-def __str__(self):
-    return self.name
 
 
 class Vehicle(models.Model):
@@ -45,16 +39,7 @@ class Seat(models.Model):
     def __str__(self):
         return f"{self.seat_label} - {self.vehicle.vehicle_number}"
 
-class Booking(models.Model):
-    passenger = models.ForeignKey(Passenger, on_delete=models.CASCADE)
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
-    booking_date = models.DateTimeField(auto_now_add = True)
-    journey_date = models.DateField()
-    is_confirmed = models.BooleanField(default=False)
 
-    def __str__(self):
-         return f"{self.passenger.name} - Seat {self.seat_number} on {self.journey_date}"
-    
 
 from django.db import models
 
@@ -79,14 +64,4 @@ class Bookings(models.Model):
     def __str__(self):
         return f"{self.name} - {self.ticket_id}"
 
-class Payment(models.Model):
-    booking = models.OneToOneField(Booking, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_gateway = models.CharField(max_length=50)  # e.g., Khalti, Esewa, Stripe
-    transaction_id = models.CharField(max_length=100, unique=True)
-    paid_at = models.DateTimeField(auto_now_add=True)
-    is_successful = models.BooleanField(default=True)
-
-    def __str__(self):
-        return f"{self.booking.passenger.name} - {self.amount} via {self.payment_gateway}"
 

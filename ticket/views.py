@@ -1,37 +1,31 @@
 from django.shortcuts import render, redirect
 import requests 
-from .models import Vehicle, Booking, Passenger, Payment, Seat, Bookings
+from .models import Vehicle, Bookings, Seat
 from .forms import VehicleForm
 from django.http import HttpResponse
 from datetime import datetime
 from decimal import Decimal
 
-
-
-
-
 from .utils.esewa import generate_esewa_signature
 from django.conf import settings
 import uuid
-from .models import Booking
+from django.db.models.functions import Upper
+
+
+
+import base64
+import json
+from decimal import Decimal
+from datetime import datetime
+from django.shortcuts import render
+from .models import Bookings
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 
 def home_view(request):
     return render(request, 'home.html') 
 
-
-
-# def veichle_view(request):
-#     if request.method == 'POST':
-#         form = VehicleForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('vehicle-success')
-#     else:
-#         form = VehicleForm()  # 👈 this is now correctly handling GET
-
-#     return render(request, 'ticket/vehicle_form.html', {'form': form})  # ✅ always returns
 
 
 def veichle_view(request):
@@ -187,20 +181,8 @@ def initiate_esewa_payment(request):
     return render(request, 'ticket/esewa.html', context)
 
 
-import base64
-import json
-from decimal import Decimal
-from datetime import datetime
-from django.shortcuts import render
-from .models import Bookings
 
 
-import base64
-import json
-from decimal import Decimal
-from datetime import datetime
-from django.shortcuts import render
-from .models import Bookings
 
 def esewa_success(request):
     print("✅ [DEBUG] eSewa success view called")
@@ -274,3 +256,29 @@ def esewa_success(request):
         print("[ERROR] Required fields missing. Booking not saved.")
 
     return render(request, 'ticket/esewasucess.html', {'ticket_id': ticket_id})
+
+
+
+
+
+def seat_selection_view(request, vehicle_id):
+    vehicle = get_object_or_404(Vehicle, id=vehicle_id)
+
+    # Get seats for vehicle
+    seats = Seat.objects.filter(vehicle=vehicle).order_by('seat_label')
+
+    # Get booked seat labels for this vehicle with payment done
+    booked_labels_qs = Bookings.objects.filter(
+        vehicle_id=vehicle.id,
+        payment_status=True
+    ).values_list('seat_label', flat=True)
+
+    # Normalize to uppercase
+    booked_seat_labels = set(label.upper() for label in booked_labels_qs if label)
+
+    context = {
+        'vehicle': vehicle,
+        'seats': seats,
+        'booked_seat_labels': booked_seat_labels,
+    }
+    return render(request, 'ticket/vehiclelist.html', context)

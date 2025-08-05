@@ -308,9 +308,15 @@
                             {% for vehicle in vehicles %}
                                 <tr>
                                     <td>
-                                        <a href="{% url 'vehicle_detail' vehicle.id %}" class="vehicle-link">
+                                        <a href="{% url 'seat_selection' vehicle.id %}">View Seats</a>
+
+                                        {% comment %} <a href="{% url 'vehicle_detail' vehicle.id %}" class="vehicle-link">
                                             {{ vehicle.vehicle_number }}
-                                        </a>
+                                        </a> {% endcomment %}
+                                        <span class="vehicle-link">
+    {{ vehicle.vehicle_number }}
+</span>
+
                                     </td>
                                     <td>
                                         <span class="vehicle-type-badge">{{ vehicle.vehicle_type }}</span>
