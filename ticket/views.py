@@ -282,3 +282,20 @@ def seat_selection_view(request, vehicle_id):
         'booked_seat_labels': booked_seat_labels,
     }
     return render(request, 'ticket/vehiclelist.html', context)
+
+
+    # views.py
+import requests
+from django.shortcuts import render
+
+
+def fetch_vehicles(request):
+    try:
+        response= requests.get('http://localhost:8080/inventory/webresources/generic/vehicles')
+        response.raise_for_status()
+        vehicles = response.json() 
+    except requests.exceptions.RequestException as e:
+        vechiles =[]
+        print("Error fetching data:", e)
+
+    return render(request, 'ticket/vechileapi.html', {'vehicles': vehicles})

@@ -13,6 +13,7 @@ urlpatterns = [
         path('esewa/initiate/', views.initiate_esewa_payment, name='esewa_initiate'),
     path('esewa/success/', views.esewa_success, name='esewa_success'),
     path('vehicles/<int:vehicle_id>/seats/', views.seat_selection_view, name='seat_selection'),
+    path('vnumber/', views.fetch_vehicles, name='fetch_vehicles')
     # path('book/', views.book_seat, name='book_seat'),
     
   
