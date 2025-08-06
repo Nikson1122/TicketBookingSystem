@@ -5,6 +5,8 @@ from .forms import VehicleForm
 from django.http import HttpResponse
 from datetime import datetime
 from decimal import Decimal
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
+
 
 from .utils.esewa import generate_esewa_signature
 from django.conf import settings
@@ -299,3 +301,12 @@ def fetch_vehicles(request):
         print("Error fetching data:", e)
 
     return render(request, 'ticket/vechileapi.html', {'vehicles': vehicles})
+
+@csrf_exempt
+def book_vehicle(request):
+    if request.method == 'POST':
+        vehicle_id = request.POST.get('vehicle_id')
+        rental_type = request.POST.get('rentalType')
+        price = float(request.POST.get('price'))
+        quantity = int(request.POST.get('hours') or request.POST.get('days') or 1)
+        total_amount = price * quantity
