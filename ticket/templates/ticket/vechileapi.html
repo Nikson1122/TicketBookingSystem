@@ -1,332 +1,332 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Vehicle List</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-weight: 700;
-            color: #222;
-            letter-spacing: 1px;
-        }
-
-        .vehicle-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 20px;
-        }
-
-        .vehicle-card {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: calc(25% - 20px);
-            box-sizing: border-box;
-            text-align: center;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .vehicle-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .vehicle-image {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-        }
-
-        .vehicle-details {
-            font-size: 16px;
-            line-height: 1.5;
-            margin-bottom: 20px;
-            color: #555;
-        }
-
-        .vehicle-details strong {
-            color: #222;
-        }
-
-        form {
-            margin-top: 10px;
-        }
-
-        .input-group {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        label {
-            font-weight: 600;
-            font-size: 14px;
-            color: #444;
-            margin-right: 10px;
-            white-space: nowrap;
-        }
-
-        input[type="number"] {
-            width: 70px;
-            padding: 8px 12px;
-            border: 1.5px solid #e0e0e0;
-            border-radius: 5px;
-            font-size: 15px;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
-        }
-
-        .total-container {
-            background: #f8f9fa;
-            border-radius: 6px;
-            padding: 12px;
-            margin: 15px 0;
-            border: 1px solid #e0e0e0;
-        }
-
-        .total-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 5px;
-            display: block;
-        }
-
-        .total-output {
-            font-weight: 700;
-            font-size: 18px;
-            color: #007bff;
-            display: block;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 12px 22px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 16px;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-            transform: translateY(-1px);
-        }
-
-        /* Responsive */
-        @media (max-width: 1000px) {
-            .vehicle-card {
-                width: calc(50% - 20px);
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Vehicle List</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f0f2f5;
+                margin: 0;
+                padding: 20px;
+                color: #333;
             }
-        }
 
-        @media (max-width: 600px) {
+            h1 {
+                text-align: center;
+                margin-bottom: 30px;
+                font-weight: 700;
+                color: #222;
+                letter-spacing: 1px;
+            }
+
+            .vehicle-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                gap: 20px;
+            }
+
             .vehicle-card {
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+                width: calc(25% - 20px);
+                box-sizing: border-box;
+                text-align: center;
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+
+            .vehicle-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            }
+
+            .vehicle-image {
                 width: 100%;
+                height: 180px;
+                object-fit: cover;
+                border-radius: 8px;
+                margin-bottom: 15px;
+                border: 1px solid #ddd;
             }
-        }
 
-        /* Modal styling */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
+            .vehicle-details {
+                font-size: 16px;
+                line-height: 1.5;
+                margin-bottom: 20px;
+                color: #555;
+            }
 
-        .modal {
-            background: white;
-            border-radius: 12px;
-            padding: 25px 30px;
-            max-width: 350px;
-            width: 90%;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-            text-align: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+            .vehicle-details strong {
+                color: #222;
+            }
 
-        .modal h2 {
-            margin-bottom: 20px;
-            font-weight: 700;
-            color: #222;
-        }
+            form {
+                margin-top: 10px;
+            }
 
-        .modal button {
-            margin: 10px 0;
-            width: 80%;
-            font-size: 17px;
-        }
+            .input-group {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 15px;
+            }
 
-        #esewa-btn {
-            background-color: #53a82b;
-        }
+            label {
+                font-weight: 600;
+                font-size: 14px;
+                color: #444;
+                margin-right: 10px;
+                white-space: nowrap;
+            }
 
-        #esewa-btn:hover {
-            background-color: #459124;
-        }
+            input[type="number"] {
+                width: 70px;
+                padding: 8px 12px;
+                border: 1.5px solid #e0e0e0;
+                border-radius: 5px;
+                font-size: 15px;
+                transition: all 0.3s ease;
+                text-align: center;
+            }
 
-        #khalti-btn {
-            background-color: #5C2D91;
-        }
+            input[type="number"]:focus {
+                outline: none;
+                border-color: #007bff;
+                box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+            }
 
-        #khalti-btn:hover {
-            background-color: #4a2475;
-        }
+            .total-container {
+                background: #f8f9fa;
+                border-radius: 6px;
+                padding: 12px;
+                margin: 15px 0;
+                border: 1px solid #e0e0e0;
+            }
 
-        .modal .close-btn {
-            background: #6c757d;
-            margin-top: 15px;
-            width: auto;
-            padding: 8px 20px;
-            font-weight: 600;
-        }
+            .total-label {
+                font-size: 14px;
+                color: #666;
+                margin-bottom: 5px;
+                display: block;
+            }
 
-        .modal .close-btn:hover {
-            background: #5a6268;
-        }
-    </style>
-</head>
-<body>
-    <h1>Vehicle List</h1>
+            .total-output {
+                font-weight: 700;
+                font-size: 18px;
+                color: #007bff;
+                display: block;
+            }
 
-    {% if vehicles %}
-        <div class="vehicle-container">
-            {% for vehicle in vehicles %}
-                <div class="vehicle-card">
-                    <img src="{{ vehicle.imagePath }}" alt="Vehicle Image" class="vehicle-image">
-                    <div class="vehicle-details">
-                        <strong>Number:</strong> {{ vehicle.veichleNumber }}<br>
-                        <strong>Price:</strong> NPR {{ vehicle.price }}<br>
-                        <strong>Description:</strong> {{ vehicle.description }}<br>
-                        <strong>Rental Type:</strong> {{ vehicle.rentalType|title }}
+            button {
+                background-color: #007bff;
+                color: white;
+                border: none;
+                padding: 12px 22px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: 600;
+                font-size: 16px;
+                width: 100%;
+                transition: all 0.3s ease;
+            }
+
+            button:hover {
+                background-color: #0056b3;
+                transform: translateY(-1px);
+            }
+
+            /* Responsive */
+            @media (max-width: 1000px) {
+                .vehicle-card {
+                    width: calc(50% - 20px);
+                }
+            }
+
+            @media (max-width: 600px) {
+                .vehicle-card {
+                    width: 100%;
+                }
+            }
+
+            /* Modal styling */
+            .modal-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.6);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            }
+
+            .modal {
+                background: white;
+                border-radius: 12px;
+                padding: 25px 30px;
+                max-width: 350px;
+                width: 90%;
+                box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+                text-align: center;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            .modal h2 {
+                margin-bottom: 20px;
+                font-weight: 700;
+                color: #222;
+            }
+
+            .modal button {
+                margin: 10px 0;
+                width: 80%;
+                font-size: 17px;
+            }
+
+            #esewa-btn {
+                background-color: #53a82b;
+            }
+
+            #esewa-btn:hover {
+                background-color: #459124;
+            }
+
+            #khalti-btn {
+                background-color: #5C2D91;
+            }
+
+            #khalti-btn:hover {
+                background-color: #4a2475;
+            }
+
+            .modal .close-btn {
+                background: #6c757d;
+                margin-top: 15px;
+                width: auto;
+                padding: 8px 20px;
+                font-weight: 600;
+            }
+
+            .modal .close-btn:hover {
+                background: #5a6268;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Vehicle List</h1>
+
+        {% if vehicles %}
+            <div class="vehicle-container">
+                {% for vehicle in vehicles %}
+                    <div class="vehicle-card">
+                        <img src="{{ vehicle.imagePath }}" alt="Vehicle Image" class="vehicle-image">
+                        <div class="vehicle-details">
+                            <strong>Number:</strong> {{ vehicle.veichleNumber }}<br>
+                            <strong>Price:</strong> NPR {{ vehicle.price }}<br>
+                            <strong>Description:</strong> {{ vehicle.description }}<br>
+                            <strong>Rental Type:</strong> {{ vehicle.rentalType|title }}
+                        </div>
+
+                        <form method="POST" action="{% url 'book_vehicle' %}" class="booking-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="vehicle_id" value="{{ vehicle.id }}">
+                            <input type="hidden" name="price" value="{{ vehicle.price }}">
+                            <input type="hidden" name="rentalType" value="{{ vehicle.rentalType }}">
+
+                            <div class="input-group">
+                                {% if vehicle.rentalType == 'hourly' %}
+                                    <label for="hours_{{ vehicle.id }}">Hours:</label>
+                                    <input type="number" id="hours_{{ vehicle.id }}" name="hours" min="1" value="1" required>
+                                {% elif vehicle.rentalType == 'daily' %}
+                                    <label for="days_{{ vehicle.id }}">Days:</label>
+                                    <input type="number" id="days_{{ vehicle.id }}" name="days" min="1" value="1" required>
+                                {% endif %}
+                            </div>
+
+                            <div class="total-container">
+                                <span class="total-label">Total Amount</span>
+                                <span class="total-output" id="total_{{ vehicle.id }}">0.00</span>
+                            </div>
+
+                            <button type="submit" class="book-btn">Book Now</button>
+                        </form>
                     </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="text-align: center;">No vehicles found or failed to fetch data.</p>
+        {% endif %}
 
-                    <form method="POST" action="{% url 'book_vehicle' %}" class="booking-form">
-                        {% csrf_token %}
-                        <input type="hidden" name="vehicle_id" value="{{ vehicle.id }}">
-                        <input type="hidden" name="price" value="{{ vehicle.price }}">
-                        <input type="hidden" name="rentalType" value="{{ vehicle.rentalType }}">
-
-                        <div class="input-group">
-                            {% if vehicle.rentalType == 'hourly' %}
-                                <label for="hours_{{ vehicle.id }}">Hours:</label>
-                                <input type="number" id="hours_{{ vehicle.id }}" name="hours" min="1" value="1" required>
-                            {% elif vehicle.rentalType == 'daily' %}
-                                <label for="days_{{ vehicle.id }}">Days:</label>
-                                <input type="number" id="days_{{ vehicle.id }}" name="days" min="1" value="1" required>
-                            {% endif %}
-                        </div>
-
-                        <div class="total-container">
-                            <span class="total-label">Total Amount</span>
-                            <span class="total-output" id="total_{{ vehicle.id }}">0.00</span>
-                        </div>
-
-                        <button type="submit" class="book-btn">Book Now</button>
-                    </form>
-                </div>
-            {% endfor %}
+        <!-- Modal dialog -->
+        <div class="modal-overlay" id="payment-modal">
+            <div class="modal">
+                <h2>Select Payment Method</h2>
+                <button id="esewa-btn">Pay with eSewa</button>
+                <button id="khalti-btn">Pay with Khalti</button>
+                <button class="close-btn" id="close-modal">Cancel</button>
+            </div>
         </div>
-    {% else %}
-        <p style="text-align: center;">No vehicles found or failed to fetch data.</p>
-    {% endif %}
 
-    <!-- Modal dialog -->
-    <div class="modal-overlay" id="payment-modal">
-        <div class="modal">
-            <h2>Select Payment Method</h2>
-            <button id="esewa-btn">Pay with eSewa</button>
-            <button id="khalti-btn">Pay with Khalti</button>
-            <button class="close-btn" id="close-modal">Cancel</button>
-        </div>
-    </div>
+        <script>
+            // Update totals per form
+            document.querySelectorAll('.vehicle-card form').forEach(form => {
+                const price = parseFloat(form.querySelector('input[name="price"]').value);
+                const qtyInput = form.querySelector('input[name="hours"], input[name="days"]');
+                const totalOutput = form.querySelector('.total-output');
 
-    <script>
-        // Update totals per form
-        document.querySelectorAll('.vehicle-card form').forEach(form => {
-            const price = parseFloat(form.querySelector('input[name="price"]').value);
-            const qtyInput = form.querySelector('input[name="hours"], input[name="days"]');
-            const totalOutput = form.querySelector('.total-output');
+                function updateTotal() {
+                    const qty = parseInt(qtyInput.value) || 0;
+                    const total = price * qty;
+                    totalOutput.textContent = total.toFixed(2);
+                }
 
-            function updateTotal() {
-                const qty = parseInt(qtyInput.value) || 0;
-                const total = price * qty;
-                totalOutput.textContent = total.toFixed(2);
-            }
+                updateTotal();
 
-            updateTotal();
-
-            qtyInput.addEventListener('input', updateTotal);
-        });
-
-        // Modal and payment flow
-        const modal = document.getElementById('payment-modal');
-        let activeForm = null; // Track which form is booking
-
-        // Open modal on Book click and prevent form submit
-        document.querySelectorAll('.book-btn').forEach(btn => {
-            btn.addEventListener('click', e => {
-                e.preventDefault();
-                activeForm = e.target.closest('form');
-                modal.style.display = 'flex';
+                qtyInput.addEventListener('input', updateTotal);
             });
-        });
 
-        // Close modal
-        document.getElementById('close-modal').addEventListener('click', () => {
-            modal.style.display = 'none';
-            activeForm = null;
-        });
+            // Modal and payment flow
+            const modal = document.getElementById('payment-modal');
+            let activeForm = null; // Track which form is booking
 
-        // Handle payment buttons
-        document.getElementById('esewa-btn').addEventListener('click', () => {
-            modal.style.display = 'none';
-            alert('You chose to pay with eSewa.');
-            // TODO: Add eSewa payment integration here
-            if(activeForm) activeForm.submit();
-        });
+            // Open modal on Book click and prevent form submit
+            document.querySelectorAll('.book-btn').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.preventDefault();
+                    activeForm = e.target.closest('form');
+                    modal.style.display = 'flex';
+                });
+            });
 
-        document.getElementById('khalti-btn').addEventListener('click', () => {
-            modal.style.display = 'none';
-            alert('You chose to pay with Khalti.');
-            // TODO: Add Khalti payment integration here
-            if(activeForm) activeForm.submit();
-        });
-
-        // Close modal if clicked outside modal content
-        modal.addEventListener('click', e => {
-            if(e.target === modal) {
+            // Close modal
+            document.getElementById('close-modal').addEventListener('click', () => {
                 modal.style.display = 'none';
                 activeForm = null;
-            }
-        });
-    </script>
-</body>
-</html>
+            });
+
+            // Handle payment buttons
+            document.getElementById('esewa-btn').addEventListener('click', () => {
+                modal.style.display = 'none';
+                alert('You chose to pay with eSewa.');
+                // TODO: Add eSewa payment integration here
+                if(activeForm) activeForm.submit();
+            });
+
+            document.getElementById('khalti-btn').addEventListener('click', () => {
+                modal.style.display = 'none';
+                alert('You chose to pay with Khalti.');
+                // TODO: Add Khalti payment integration here
+                if(activeForm) activeForm.submit();
+            });
+
+            // Close modal if clicked outside modal content
+            modal.addEventListener('click', e => {
+                if(e.target === modal) {
+                    modal.style.display = 'none';
+                    activeForm = null;
+                }
+            });
+        </script>
+    </body>
+    </html>

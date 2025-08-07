@@ -6,7 +6,9 @@ from django.http import HttpResponse
 from datetime import datetime
 from decimal import Decimal
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
-
+from django.contrib import messages
+from .forms import LoginForm
+import json
 
 from .utils.esewa import generate_esewa_signature
 from django.conf import settings
@@ -286,9 +288,7 @@ def seat_selection_view(request, vehicle_id):
     return render(request, 'ticket/vehiclelist.html', context)
 
 
-    # views.py
-import requests
-from django.shortcuts import render
+
 
 
 def fetch_vehicles(request):
@@ -310,3 +310,47 @@ def book_vehicle(request):
         price = float(request.POST.get('price'))
         quantity = int(request.POST.get('hours') or request.POST.get('days') or 1)
         total_amount = price * quantity
+
+    return render(request, 'ticket/book_vehicle.html')
+
+
+
+
+
+JAVA_API_LOGIN_URL = "http://localhost:8080/inventory/webresources/generic/login"
+
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+
+            payload = json.dumps({'email': email, 'password': password})
+            headers = {'Content-Type': 'text/plain'}
+
+            try:
+                response = requests.post(JAVA_API_LOGIN_URL, data=payload, headers=headers)
+
+                print("API Response status:", response.status_code)
+                print("API Response body:", response.text)
+
+                if response.status_code == 200:
+                    json_data = response.json()
+                    token = json_data.get('token')
+                    if token:
+                        request.session['jwt_token'] = token
+                        return redirect('fetch_vehicles')  
+                    else:
+                        messages.error(request, "Login failed: No token received from server.")
+                elif response.status_code == 401:
+                    messages.error(request, "Invalid credentials.")
+                else:
+                    messages.error(request, f"Login failed with status code {response.status_code}.")
+            except requests.exceptions.RequestException as e:
+                messages.error(request, f"Error contacting authentication server: {e}")
+    else:
+        form = LoginForm()
+
+    return render(request, 'home.html', {'form': form})
+
