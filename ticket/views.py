@@ -309,6 +309,7 @@ def fetch_vehicles(request):
             price = form.cleaned_data['price']
             rental_type = form.cleaned_data['rental_type']
             total_price = quantity * price
+            request.session['total_price'] = float(total_price)
             return render(request, 'ticket/vechileapi.html', {
                 'vehicles': vehicles,
                 'form': form,
@@ -365,7 +366,39 @@ def login_view(request):
 
     return render(request, 'home.html', {'form': form})
 
+import uuid
 
+def esewa_book(request):
+  
+    total_price = request.session.get('total_price', None)
+    print("Total price from session:", total_price)
+    if total_price is None:
 
+        pass
 
+    # Generate transaction UUID
+    transaction_uuid = str(uuid.uuid4())
 
+    # Assuming you have this function defined somewhere
+    signature = generate_esewa_signature(total_price, transaction_uuid)
+
+    # Build absolute URLs for eSewa callbacks
+    success_url = request.build_absolute_uri('/esewa/success/')
+    failure_url = request.build_absolute_uri('/esewa/failure/')
+
+    # Pass all this data to your template so the form can include it as hidden inputs
+    context = {
+        'amount': total_price,
+        'tax_amount': '0',
+        'total_amount': total_price,
+        'transaction_uuid': transaction_uuid,
+        'product_code': settings.ESEWA_MERCHANT_CODE,
+        'product_service_charge': '0',
+        'product_delivery_charge': '0',
+        'success_url': success_url,
+        'failure_url': failure_url,
+        'signed_field_names': 'total_amount,transaction_uuid,product_code',
+        'signature': signature,
+    }
+  
+    return render(request, 'ticket/esewa.html', context)

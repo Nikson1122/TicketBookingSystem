@@ -2,8 +2,7 @@
 <html>
 <head>
     <title>Car Rental - Vehicle List and Booking</title>
-      <link href="https://fonts.googleapis.com/css2?family=Lato:wght@600&display=swap" rel="stylesheet">
-    <style>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@600&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -13,7 +12,7 @@
             line-height: 1.6;
         }
         
-       h1 {
+        h1 {
             text-align: center;
             color: #2c3e50;
             margin-bottom: 40px;
@@ -91,7 +90,7 @@
             text-align: center;
         }
         
-        button {
+        button, label.book-btn {
             margin-top: 15px;
             width: 100%;
             padding: 10px;
@@ -103,9 +102,12 @@
             border-radius: 4px;
             transition: background-color 0.3s;
             font-size: 0.95rem;
+            text-align: center;
+            display: inline-block;
+            user-select: none;
         }
         
-        button:hover {
+        button:hover, label.book-btn:hover {
             background-color: #3498db;
         }
         
@@ -115,6 +117,75 @@
             color: #27ae60;
             text-align: center;
             font-size: 1.1rem;
+        }
+
+        /* Modal toggle checkbox - hidden */
+        input[type="checkbox"].modal-toggle {
+            display: none;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Show modal when checkbox checked */
+        input.modal-toggle:checked + .modal {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px 25px;
+            border-radius: 10px;
+            width: 320px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .modal-content h2 {
+            margin-bottom: 25px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .modal-content a.payment-btn {
+            display: block;
+            margin: 12px 0;
+            padding: 12px 0;
+            background-color: #2980b9;
+            color: white;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .modal-content a.payment-btn:hover {
+            background-color: #3498db;
+        }
+
+        /* Close button label */
+        label.close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #777;
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.3s ease;
+        }
+        label.close-btn:hover {
+            color: #333;
         }
     </style>
 </head>
@@ -146,8 +217,33 @@
                     <input type="number" name="quantity" min="1" value="1" required>
                 </label>
                 <button type="submit">Calculate</button>
-                <p class="total-price"><strong>Total Price: {{ total_price }}</strong></p>
             </form>
+
+            <p class="total-price"><strong>Total Price: {{ total_price }}</strong></p>
+
+            <!-- Modal toggle checkbox -->
+            <input type="checkbox" id="modal-toggle-{{ vehicle.id }}" class="modal-toggle" />
+
+            <!-- Modal dialog immediately after checkbox -->
+            <div class="modal">
+                <div class="modal-content">
+                    <!-- Close modal -->
+                    <label for="modal-toggle-{{ vehicle.id }}" class="close-btn">&times;</label>
+
+                    <h2>Select Payment Method</h2>
+
+                    <a href="{% url 'esewa_book' %}" class="payment-btn">Pay with eSewa</a>
+
+
+             
+
+
+                    <a href="/khalti/pay/{{ vehicle.id }}" class="payment-btn">Pay with Khalti</a>
+                </div>
+            </div>
+
+            <!-- Book button triggers modal toggle -->
+            <label for="modal-toggle-{{ vehicle.id }}" class="book-btn">Book</label>
         </div>
         {% endfor %}
     </div>

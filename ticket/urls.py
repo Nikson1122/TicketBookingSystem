@@ -14,7 +14,7 @@ urlpatterns = [
     path('esewa/success/', views.esewa_success, name='esewa_success'),
     path('vehicles/<int:vehicle_id>/seats/', views.seat_selection_view, name='seat_selection'),
     path('vnumber/', views.fetch_vehicles, name='fetch_vehicles'),
-    
+    path('book/', views.esewa_book, name='esewa_book'),
   
 
     # path('login/', views.login_view, name='login'),
