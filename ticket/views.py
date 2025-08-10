@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 import requests 
 from .models import Vehicle, Bookings, Seat
-from .forms import VehicleForm
+from .forms import VehicleForm, BookingForm 
 from django.http import HttpResponse
 from datetime import datetime
 from decimal import Decimal
@@ -14,6 +14,7 @@ from .utils.esewa import generate_esewa_signature
 from django.conf import settings
 import uuid
 from django.db.models.functions import Upper
+from django.views.decorators.http import require_POST
 
 
 
@@ -293,25 +294,35 @@ def seat_selection_view(request, vehicle_id):
 
 def fetch_vehicles(request):
     try:
-        response= requests.get('http://localhost:8080/inventory/webresources/generic/vehicles')
+        response = requests.get('http://localhost:8080/inventory/webresources/generic/vehicles')
         response.raise_for_status()
-        vehicles = response.json() 
+        vehicles = response.json()
+  
     except requests.exceptions.RequestException as e:
-        vechiles =[]
+        vehicles = []
         print("Error fetching data:", e)
 
-    return render(request, 'ticket/vechileapi.html', {'vehicles': vehicles})
-
-@csrf_exempt
-def book_vehicle(request):
     if request.method == 'POST':
-        vehicle_id = request.POST.get('vehicle_id')
-        rental_type = request.POST.get('rentalType')
-        price = float(request.POST.get('price'))
-        quantity = int(request.POST.get('hours') or request.POST.get('days') or 1)
-        total_amount = price * quantity
+        form = BookingForm(request.POST)
+        if form.is_valid():
+            quantity = form.cleaned_data['quantity']
+            price = form.cleaned_data['price']
+            rental_type = form.cleaned_data['rental_type']
+            total_price = quantity * price
+            return render(request, 'ticket/vechileapi.html', {
+                'vehicles': vehicles,
+                'form': form,
+                'total_price': total_price,
+                'show_result': True
+            })
+    else:
+        form = BookingForm()  # initialize empty form for GET
 
-    return render(request, 'ticket/book_vehicle.html')
+    return render(request, 'ticket/vechileapi.html', {
+        'vehicles': vehicles,
+        'form': form
+    })
+
 
 
 
@@ -353,4 +364,8 @@ def login_view(request):
         form = LoginForm()
 
     return render(request, 'home.html', {'form': form})
+
+
+
+
 
