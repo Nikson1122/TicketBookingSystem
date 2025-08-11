@@ -537,11 +537,6 @@ def verify_khalti_payment(request):
     payment_completed, khalti_response = verify_payment(pidx)
     booking_date = now().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
 
-    # payment_data = {
-    #     "amount": khalti_response.get("total_amount"),
-    #     "transactionId": khalti_response.get("transaction_id"),
-    #     "paymentMethod": "khalti",
-    # }
 
     payment_data = {
     "price": str(request.session.get("total_price")),
