@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Payment Bill</title>
+    <style>
+        /* Reset some defaults */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f2f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 30px 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .bill {
+            background: #fff;
+            max-width: 480px;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+            padding: 40px 30px;
+            color: #444;
+        }
+
+        .bill-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .bill-header h1 {
+            font-size: 28px;
+            letter-spacing: 2px;
+            color: #222;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .bill-header::after {
+            content: "";
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: #3f51b5;
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+
+        .bill-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 17px;
+        }
+
+        .bill-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .value {
+            font-weight: 500;
+            color: #555;
+        }
+
+        .status {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            padding: 14px 0;
+            border-radius: 10px;
+            color: white;
+            max-width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+            user-select: none;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+
+        .status.Completed {
+            background: #4caf50;
+            box-shadow: 0 8px 24px rgba(76,175,80,0.4);
+        }
+
+        .status.Failed {
+            background: #f44336;
+            box-shadow: 0 8px 24px rgba(244,67,54,0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .bill {
+                padding: 30px 20px;
+            }
+
+            .bill-row {
+                font-size: 15px;
+            }
+
+            .bill-header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bill">
+        <div class="bill-header">
+            <h1>Payment Bill</h1>
+        </div>
+
+        <div class="bill-row">
+            <div class="label">Price</div>
+            <div class="value">Rs. {{ payment_info.price }}</div>
+        </div>
+
+        <div class="bill-row">
+            <div class="label">Vehicle Number</div>
+            <div class="value">{{ payment_info.vehicle_number}}</div>
+        </div>
+
+        <div class="bill-row">
+            <div class="label">Rental Type</div>
+            <div class="value">{{ payment_info.rental_type|title }}</div>
+        </div>
+
+        <div class="bill-row">
+            <div class="label">Booking Date</div>
+            <div class="value">{{ payment_info.booking_date }}</div>
+        </div>

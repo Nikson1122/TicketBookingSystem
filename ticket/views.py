@@ -554,10 +554,7 @@ def verify_khalti_payment(request):
 
     threading.Thread(target=call_save_payment_async, args=(payment_data, save_payment_url)).start()
 
-    return JsonResponse({
-        'payment_completed': payment_completed,
-        'khalti_response': khalti_response
-    })
+    return render(request, 'ticket/payment_report.html', {'payment_info': payment_data})
 
 
     
@@ -582,4 +579,11 @@ def save_payment(request):
         return JsonResponse({"error": "Invalid JSON"}, status=400)
     except requests.RequestException as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+
+
+
+def payment_bill(request):
+    payment_info = request.session.get('payment_info', {})
+    return render(request, 'payment_bill.html', {'payment_info': payment_info})
 

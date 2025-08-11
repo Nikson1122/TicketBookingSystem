@@ -18,6 +18,7 @@ urlpatterns = [
     path('khalti/', views. initiate_khalti_payment, name='khalti_book'),
     path('khalti/verify', views.verify_khalti_payment, name='verify_khali'),
        path('save-payment/', views.save_payment, name='save_payment'),
+ 
 
   
 
