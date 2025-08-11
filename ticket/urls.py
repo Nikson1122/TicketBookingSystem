@@ -15,6 +15,7 @@ urlpatterns = [
     path('vehicles/<int:vehicle_id>/seats/', views.seat_selection_view, name='seat_selection'),
     path('vnumber/', views.fetch_vehicles, name='fetch_vehicles'),
     path('book/', views.esewa_book, name='esewa_book'),
+    path('khalti/', views. initiate_khalti_payment, name='khalti_book'),
   
 
     # path('login/', views.login_view, name='login'),

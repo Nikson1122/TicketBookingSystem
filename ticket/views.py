@@ -402,3 +402,57 @@ def esewa_book(request):
     }
   
     return render(request, 'ticket/esewa.html', context)
+
+
+
+
+def initiate_khalti_payment(request):
+    total_price = request.session.get('total_price', None)
+    if not total_price:
+        print("No total price found in session")
+        return redirect('vehicle_list')  # or wherever you want to send the user
+
+    transaction_uuid = str(uuid.uuid4())
+
+    try:
+        url = "https://dev.khalti.com/api/v2/epayment/initiate/"
+
+        headers = {
+            "Authorization": "key live_secret_key_68791341fdd94846a146f0457ff7b455",
+            "Content-Type": "application/json"
+        }
+
+        amount_in_paisa = int(float(total_price) * 100)
+
+        payload = {
+            "return_url": "http://127.0.0.1:8000/esewa/success/",
+            "website_url": "http://127.0.0.1:8000/vnumber/",
+            "amount": str(amount_in_paisa),
+            "purchase_order_id": transaction_uuid,
+            "purchase_order_name": f"Booking Order {transaction_uuid}"  # REQUIRED
+        }
+
+        response = requests.post(url, headers=headers, data=json.dumps(payload))
+
+        if response.status_code == 200:
+            data = response.json()
+            payment_url = data.get("payment_url")
+            pidx = data.get("pidx")
+
+            print("pidx:", pidx)
+            print("payment_url:", payment_url)
+            print("Khalti Response:", data)
+
+         
+            request.session['khalti_pidx'] = pidx
+
+     
+            return redirect(payment_url)
+        else:
+            print("Error:", response.status_code, response.text)
+            return redirect('payment_failed')
+
+    except Exception as e:
+        print("Exception occurred:", e)
+        return redirect('payment_failed')
+
