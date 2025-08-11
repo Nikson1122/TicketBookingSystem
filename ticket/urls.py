@@ -16,6 +16,9 @@ urlpatterns = [
     path('vnumber/', views.fetch_vehicles, name='fetch_vehicles'),
     path('book/', views.esewa_book, name='esewa_book'),
     path('khalti/', views. initiate_khalti_payment, name='khalti_book'),
+    path('khalti/verify', views.verify_khalti_payment, name='verify_khali'),
+       path('save-payment/', views.save_payment, name='save_payment'),
+
   
 
     # path('login/', views.login_view, name='login'),

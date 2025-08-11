@@ -9,13 +9,16 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.contrib import messages
 from .forms import LoginForm
 import json
-
+from django.http import JsonResponse
 from .utils.esewa import generate_esewa_signature
 from django.conf import settings
 import uuid
 from django.db.models.functions import Upper
 from django.views.decorators.http import require_POST
-
+import threading
+from django.http import HttpResponseBadRequest
+from django.utils import timezone
+from django.utils.timezone import now
 
 
 import base64
@@ -192,7 +195,7 @@ def initiate_esewa_payment(request):
 def esewa_success(request):
     print("✅ [DEBUG] eSewa success view called")
 
-    # 1. Decode the 'data' from eSewa
+
     data_encoded = request.GET.get('data')
     try:
         data_json = base64.b64decode(data_encoded).decode('utf-8')
@@ -202,7 +205,7 @@ def esewa_success(request):
         print("[ERROR] Could not decode eSewa data:", e)
         return render(request, 'ticket/esewasucess.html', {'error': 'Payment verification failed.'})
 
-    # 2. Get booking data from session
+  
     booking_data = request.session.get('booking_data', {})
     print("[DEBUG] Booking data from session:", booking_data)
 
@@ -219,7 +222,7 @@ def esewa_success(request):
     except (ValueError, TypeError) as e:
         print(f"[ERROR] Invalid departure date (format %b. %d, %Y): {e}")
         try:
-            # Try an alternative format if the first one fails
+        
             departure_date = datetime.strptime(departure_date_str, '%Y-%m-%d').date()
         except Exception as e:
             print("[ERROR] Invalid departure date (format %Y-%m-%d):", e)
@@ -272,13 +275,13 @@ def seat_selection_view(request, vehicle_id):
     # Get seats for vehicle
     seats = Seat.objects.filter(vehicle=vehicle).order_by('seat_label')
 
-    # Get booked seat labels for this vehicle with payment done
+    
     booked_labels_qs = Bookings.objects.filter(
         vehicle_id=vehicle.id,
         payment_status=True
     ).values_list('seat_label', flat=True)
 
-    # Normalize to uppercase
+    
     booked_seat_labels = set(label.upper() for label in booked_labels_qs if label)
 
     context = {
@@ -292,37 +295,7 @@ def seat_selection_view(request, vehicle_id):
 
 
 
-# def fetch_vehicles(request):
-#     try:
-#         response = requests.get('http://localhost:8080/inventory/webresources/generic/vehicles')
-#         response.raise_for_status()
-#         vehicles = response.json()
-  
-#     except requests.exceptions.RequestException as e:
-#         vehicles = []
-#         print("Error fetching data:", e)
 
-#     if request.method == 'POST':
-#         form = BookingForm(request.POST)
-#         if form.is_valid():
-#             quantity = form.cleaned_data['quantity']
-#             price = form.cleaned_data['price']
-#             rental_type = form.cleaned_data['rental_type']
-#             total_price = quantity * price
-#             request.session['total_price'] = float(total_price)
-#             return render(request, 'ticket/vechileapi.html', {
-#                 'vehicles': vehicles,
-#                 'form': form,
-#                 'total_price': total_price,
-#                 'show_result': True
-#             })
-#     else:
-#         form = BookingForm()  # initialize empty form for GET
-
-#     return render(request, 'ticket/vechileapi.html', {
-#         'vehicles': vehicles,
-#         'form': form
-#     })
 
 
 def fetch_vehicles(request):
@@ -341,12 +314,34 @@ def fetch_vehicles(request):
         form = BookingForm(request.POST)
         if form.is_valid():
             quantity = form.cleaned_data['quantity']
-            price = form.cleaned_data['price']
             rental_type = form.cleaned_data['rental_type']
-            vehicle_id = request.POST.get('vehicle_id')  # get vehicle id from POST data
-            
+            price = form.cleaned_data['price']
+            print("price is", price)
+
+            selected_vehicle_id = request.POST.get('vehicle_id')
+        vehicle_number = None
+
+        # Debug print
+        print(f"Selected vehicle ID from form: {selected_vehicle_id}")
+
+        
+        if selected_vehicle_id:
+            for v in vehicles:
+                if str(v.get('id')) == str(selected_vehicle_id):
+                    vehicle_number = v.get('veichleNumber')
+                    print(f"Vehicle number found: {vehicle_number}")
+                    break
+          
+     
             total_price = quantity * price
-            selected_vehicle_id = int(vehicle_id) if vehicle_id else None
+            request.session['total_price'] = float(total_price)
+            request.session['rental_type'] = rental_type
+            request.session['vehicle_number'] = vehicle_number
+
+            request.session['vehicle_id'] = int(selected_vehicle_id) if selected_vehicle_id else None
+
+            
+            selected_vehicle_id = int(selected_vehicle_id) if selected_vehicle_id else None
             
             return render(request, 'ticket/vechileapi.html', {
                 'vehicles': vehicles,
@@ -356,7 +351,7 @@ def fetch_vehicles(request):
                 'show_result': True
             })
     else:
-        form = BookingForm()  # initialize empty form for GET
+        form = BookingForm()  
 
     return render(request, 'ticket/vechileapi.html', {
         'vehicles': vehicles,
@@ -415,17 +410,15 @@ def esewa_book(request):
 
         pass
 
-    # Generate transaction UUID
+ 
     transaction_uuid = str(uuid.uuid4())
 
-    # Assuming you have this function defined somewhere
+
     signature = generate_esewa_signature(total_price, transaction_uuid)
 
-    # Build absolute URLs for eSewa callbacks
     success_url = request.build_absolute_uri('/esewa/success/')
     failure_url = request.build_absolute_uri('/esewa/failure/')
 
-    # Pass all this data to your template so the form can include it as hidden inputs
     context = {
         'amount': total_price,
         'tax_amount': '0',
@@ -447,9 +440,10 @@ def esewa_book(request):
 
 def initiate_khalti_payment(request):
     total_price = request.session.get('total_price', None)
+    print("Total price from session:", total_price)
     if not total_price:
         print("No total price found in session")
-        return redirect('vehicle_list')  # or wherever you want to send the user
+        return redirect('vehicle_list')  
 
     transaction_uuid = str(uuid.uuid4())
 
@@ -464,11 +458,12 @@ def initiate_khalti_payment(request):
         amount_in_paisa = int(float(total_price) * 100)
 
         payload = {
-            "return_url": "http://127.0.0.1:8000/esewa/success/",
+            "return_url": "http://127.0.0.1:8000/khalti/verify",
+
             "website_url": "http://127.0.0.1:8000/vnumber/",
             "amount": str(amount_in_paisa),
             "purchase_order_id": transaction_uuid,
-            "purchase_order_name": f"Booking Order {transaction_uuid}"  # REQUIRED
+            "purchase_order_name": f"Booking Order {transaction_uuid}" 
         }
 
         response = requests.post(url, headers=headers, data=json.dumps(payload))
@@ -494,4 +489,102 @@ def initiate_khalti_payment(request):
     except Exception as e:
         print("Exception occurred:", e)
         return redirect('payment_failed')
+
+
+
+
+
+# Define this once outside the view
+def verify_payment(pidx):
+    secret_key = "key live_secret_key_68791341fdd94846a146f0457ff7b455"
+    endpoint = "https://dev.khalti.com/api/v2/epayment/lookup/"
+
+    headers = {
+        "Authorization": secret_key,
+        "Content-Type": "application/json"
+    }
+
+    json_data = {
+        "pidx": pidx
+    }
+
+    try:
+        response = requests.post(endpoint, json=json_data, headers=headers)
+        response.raise_for_status()
+        json_response = response.json()
+        print("Khalti Lookup Response:", json_response)
+        status_completed = json_response.get("status") == "Completed"
+        print("Is payment completed?", status_completed)
+        return status_completed, json_response  
+    except requests.RequestException as e:
+        print("Error verifying Khalti payment:", e)
+        return False, {}
+    
+
+def call_save_payment_async(payment_data, save_payment_url):
+    try:
+        response = requests.post(save_payment_url, json=payment_data, timeout=5)
+        print("Save Payment Response:", response.status_code, response.text)
+    except Exception as e:
+        print(f"Error calling save payment: {e}")
+
+def verify_khalti_payment(request):
+    pidx = request.GET.get('pidx')
+
+    if not pidx:
+        return JsonResponse({'error': 'pidx parameter missing'}, status=400)
+
+    payment_completed, khalti_response = verify_payment(pidx)
+    booking_date = now().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+
+    # payment_data = {
+    #     "amount": khalti_response.get("total_amount"),
+    #     "transactionId": khalti_response.get("transaction_id"),
+    #     "paymentMethod": "khalti",
+    # }
+
+    payment_data = {
+    "price": str(request.session.get("total_price")),
+    "transactionUUID": khalti_response.get("transaction_id"),
+    "veichleNumber": request.session.get("vehicle_number"),
+    "rentalType": request.session.get("rental_type"),
+    "bookingDate": booking_date,
+    "user": {
+        "id": request.user.id  
+    }
+}
+
+    
+    save_payment_url = request.build_absolute_uri('/save-payment/')
+
+    threading.Thread(target=call_save_payment_async, args=(payment_data, save_payment_url)).start()
+
+    return JsonResponse({
+        'payment_completed': payment_completed,
+        'khalti_response': khalti_response
+    })
+
+
+    
+
+
+
+@csrf_exempt
+def save_payment(request):
+    if request.method != "POST":
+        return HttpResponseBadRequest("Only POST allowed")
+
+    try:
+        payment_data = json.loads(request.body)
+
+        url = "http://localhost:8080/inventory/webresources/generic/payment"
+        response = requests.post(url, json=payment_data)
+        response.raise_for_status()
+
+        return JsonResponse({"message": "Payment saved successfully"}, status=201)
+
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    except requests.RequestException as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
