@@ -292,15 +292,50 @@ def seat_selection_view(request, vehicle_id):
 
 
 
+# def fetch_vehicles(request):
+#     try:
+#         response = requests.get('http://localhost:8080/inventory/webresources/generic/vehicles')
+#         response.raise_for_status()
+#         vehicles = response.json()
+  
+#     except requests.exceptions.RequestException as e:
+#         vehicles = []
+#         print("Error fetching data:", e)
+
+#     if request.method == 'POST':
+#         form = BookingForm(request.POST)
+#         if form.is_valid():
+#             quantity = form.cleaned_data['quantity']
+#             price = form.cleaned_data['price']
+#             rental_type = form.cleaned_data['rental_type']
+#             total_price = quantity * price
+#             request.session['total_price'] = float(total_price)
+#             return render(request, 'ticket/vechileapi.html', {
+#                 'vehicles': vehicles,
+#                 'form': form,
+#                 'total_price': total_price,
+#                 'show_result': True
+#             })
+#     else:
+#         form = BookingForm()  # initialize empty form for GET
+
+#     return render(request, 'ticket/vechileapi.html', {
+#         'vehicles': vehicles,
+#         'form': form
+#     })
+
+
 def fetch_vehicles(request):
     try:
         response = requests.get('http://localhost:8080/inventory/webresources/generic/vehicles')
         response.raise_for_status()
         vehicles = response.json()
-  
     except requests.exceptions.RequestException as e:
         vehicles = []
         print("Error fetching data:", e)
+
+    total_price = None
+    selected_vehicle_id = None
 
     if request.method == 'POST':
         form = BookingForm(request.POST)
@@ -308,12 +343,16 @@ def fetch_vehicles(request):
             quantity = form.cleaned_data['quantity']
             price = form.cleaned_data['price']
             rental_type = form.cleaned_data['rental_type']
+            vehicle_id = request.POST.get('vehicle_id')  # get vehicle id from POST data
+            
             total_price = quantity * price
-            request.session['total_price'] = float(total_price)
+            selected_vehicle_id = int(vehicle_id) if vehicle_id else None
+            
             return render(request, 'ticket/vechileapi.html', {
                 'vehicles': vehicles,
                 'form': form,
                 'total_price': total_price,
+                'selected_vehicle_id': selected_vehicle_id,
                 'show_result': True
             })
     else:
@@ -366,7 +405,7 @@ def login_view(request):
 
     return render(request, 'home.html', {'form': form})
 
-import uuid
+
 
 def esewa_book(request):
   
