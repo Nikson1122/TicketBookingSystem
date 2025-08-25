@@ -13,6 +13,85 @@
             color: #333;
             line-height: 1.6;
         }
+
+            /* ===== Navbar Styles ===== */
+         nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #2980b9;
+        padding: 12px 25px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        position: relative;
+        flex-wrap: wrap;
+    }
+
+    nav .logo {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    nav ul {
+        list-style: none;
+        display: flex;
+        gap: 20px;
+    }
+
+    nav ul li a {
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        padding: 6px 12px;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+    }
+
+    nav ul li a:hover {
+        background-color: #3498db;
+    }
+
+    /* Hamburger Menu */
+    .hamburger {
+        display: none;
+        font-size: 1.6rem;
+        color: white;
+        cursor: pointer;
+    }
+
+    input.nav-toggle {
+        display: none;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .hamburger {
+            display: block;
+        }
+
+        nav ul {
+            flex-direction: column;
+            width: 100%;
+            display: none;
+            margin-top: 10px;
+            background-color: #2980b9;
+            border-radius: 6px;
+            padding: 10px 0;
+        }
+
+        nav ul li {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        input.nav-toggle:checked + .hamburger + ul {
+            display: flex;
+        }
+    }
         
         h1 {
             text-align: center;
@@ -204,6 +283,22 @@
     </style>
 </head>
 <body>
+    <nav>
+    <div class="logo">CarRental</div>
+
+    <!-- Hamburger menu for mobile -->
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label for="nav-toggle" class="hamburger">&#9776;</label>
+
+    <ul class="nav-links">
+        <li><a href={%url 'fetch_vehicles' %}>Home</a></li>
+        <li><a href="{% url 'vehicle_list'%}">Vehicles</a></li>
+        <li><a href="{%url 'vehicle_view'%}">Add vehicles</a></li>
+        <li><a href="{%url 'vehicle_view'%}">Contact US</a></li>
+        <li><a href="#">Contact</a></li>
+    </ul>
+</nav>
+
     <h1>Car Rental - Available Vehicles</h1>
 
     <div class="vehicle-container">
